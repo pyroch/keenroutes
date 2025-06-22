@@ -1,0 +1,13 @@
+services:
+  keenroutes:
+    image: keenroutes
+    command:
+      - "--host=192.168.1.1"
+      - "--port=22"
+      - "--username=admin"
+      - "--password=admin"
+      - "--vpn_name=10.8.1.5"
+      - "--domains=google.com"
+      - "--gateway=0.0.0.0"
+      - "--interval=60"
+    restart: always
