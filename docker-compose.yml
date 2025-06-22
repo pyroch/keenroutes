@@ -1,6 +1,6 @@
 services:
   keenroutes:
-    image: keenroutes
+    image: ghcr.io/pyroch/keenroutes:latest
     command:
       - "--host=192.168.1.1"
       - "--port=22"
