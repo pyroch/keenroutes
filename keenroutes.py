@@ -22,17 +22,26 @@ def signal_handler(sig, frame):
 signal.signal(signal.SIGINT, signal_handler)
 signal.signal(signal.SIGTERM, signal_handler)
 
-def get_ip_addresses(domain):
-    ip_addresses = []
-    try:
-        answers = dns.resolver.resolve(domain, 'A')
-        for rdata in answers:
-            ip_addresses.append(rdata.address)
-    except dns.resolver.NoAnswer:
-        print(f"[!] Нет IP-ответа для {domain}")
-    except dns.resolver.NXDOMAIN:
-        print(f"[!] Домен {domain} не существует")
-    return ip_addresses
+def get_ip_addresses(domain, attempts=1):
+    ip_set = set()
+    nameservers = ['10.10.1.1']
+
+    for ns in nameservers:
+        resolver = dns.resolver.Resolver()
+        resolver.cache = None
+        resolver.nameservers = [ns]
+        resolver.timeout = 3
+        resolver.lifetime = 6
+
+        try:
+            for _ in range(attempts):
+                answers = resolver.resolve(domain, 'A')
+                for rdata in answers:
+                    ip_set.add(rdata.address)
+        except Exception as e:
+            print(f"[!] DNS {ns} для {domain}: {e}")
+
+    return list(ip_set)
 
 def get_ips(domains):
     domain_ip_map = {}
