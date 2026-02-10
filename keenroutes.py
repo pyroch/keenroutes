@@ -22,6 +22,10 @@ def signal_handler(sig, frame):
 signal.signal(signal.SIGINT, signal_handler)
 signal.signal(signal.SIGTERM, signal_handler)
 
+def load_domains_from_file(path):
+    with open(path, "r") as f:
+        return [line.strip() for line in f if line.strip()]
+
 def get_ip_addresses(domain, attempts=1):
     ip_set = set()
     nameservers = ['10.10.1.1']
@@ -90,12 +94,12 @@ def main():
     parser.add_argument("--username", required=True)
     parser.add_argument("--password", required=True)
     parser.add_argument("--vpn_name", required=True)
-    parser.add_argument("--domains", required=True)
+    parser.add_argument("--domains", required=True, help="Путь к файлу с доменами")
     parser.add_argument("--gateway", default="0.0.0.0")
     parser.add_argument("--interval", type=int, default=60, help="Интервал между проверками в секундах. 0 — один раз")
 
     args = parser.parse_args()
-    domains = [d.strip() for d in args.domains.split(",")]
+    domains = load_domains_from_file(args.domains)
 
     while is_running:
         try:
